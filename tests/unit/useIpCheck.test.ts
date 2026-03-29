@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useIpCheck } from '../../src/hooks/useIpCheck';
-import { fetchIpInfo } from '../../src/services/ipApi';
 
 // Mock WebRTC module before importing hook
 vi.mock('../../src/services/webrtcIp', () => ({
@@ -11,6 +10,18 @@ vi.mock('../../src/services/webrtcIp', () => ({
 
 // Mock ip-api
 vi.mock('../../src/services/ipApi', () => ({
+  fetchMyIpInfo: vi.fn().mockResolvedValue({
+    status: 'success',
+    country: 'China',
+    countryCode: 'CN',
+    regionName: 'Beijing',
+    city: 'Beijing',
+    isp: 'China Telecom',
+    org: '',
+    as: 'AS23724',
+    query: '1.2.3.4',
+    latency: 50,
+  }),
   fetchIpInfo: vi.fn().mockResolvedValue({
     status: 'success',
     country: 'China',

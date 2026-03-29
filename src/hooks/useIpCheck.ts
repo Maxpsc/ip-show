@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { fetchIpInfo } from '../services/ipApi';
+import { fetchMyIpInfo, fetchIpInfo } from '../services/ipApi';
 import { getPublicIP } from '../services/webrtcIp';
 import { DOMESTIC_NODES, OVERSEAS_NODES, IpResult, NodeResult } from '../types';
 
@@ -29,23 +29,22 @@ export function useIpCheck() {
       setActualEgressIp(egressIp);
     }
 
-    // Step 2: Get detailed info via ip-api.com for geo-location
-    // Use the WebRTC-detected IP if available, otherwise query without IP
+    // Step 2: Get detailed info via multi-API fallback
+    // Try the detected IP first, then fall back to my IP
     let actualIpInfo: IpResult | null = null;
     if (egressIp) {
       try {
         actualIpInfo = await fetchIpInfo(egressIp);
       } catch {
-        // If WebRTC IP lookup fails, try without IP (returns caller's IP)
         try {
-          actualIpInfo = await fetchIpInfo();
+          actualIpInfo = await fetchMyIpInfo();
         } catch {
           // ignore
         }
       }
     } else {
       try {
-        actualIpInfo = await fetchIpInfo();
+        actualIpInfo = await fetchMyIpInfo();
       } catch {
         // ignore
       }
@@ -59,7 +58,6 @@ export function useIpCheck() {
       // Domestic nodes - simulate querying from China
       ...DOMESTIC_NODES.map(async (node) => {
         try {
-          // For domestic view, we query the actual egress IP
           const result = actualIpInfo ? { ...actualIpInfo, query: egressIp || actualIpInfo.query } : null;
           return { node: node.name, location: node.location, result, isLoading: false };
         } catch {

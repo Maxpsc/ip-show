@@ -38,7 +38,7 @@ export default function App() {
             result={overseasResult && overseasResult.countryCode !== 'CN' ? overseasResult : null}
           />
 
-          <div className="mt-4 pt-3 border-t border-gray-200">
+          {/* <div className="mt-4 pt-3 border-t border-gray-200">
             <div className="text-xs text-gray-400 mb-2">
               多节点检测 · {domesticResults.length}个国内节点 + {overseasResults.length}个海外节点
             </div>
@@ -54,7 +54,7 @@ export default function App() {
                 </span>
               ))}
             </div>
-          </div>
+          </div> */}
 
           <button
             onClick={check}
