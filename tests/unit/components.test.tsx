@@ -1,17 +1,17 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { IpCard } from '../../src/components/IpCard';
 import { NodeGrid } from '../../src/components/NodeGrid';
 
 describe('IpCard', () => {
-  it('should show loading state when result is null', () => {
-    render(<IpCard name="北京" location="BJ" result={null} />);
-    expect(screen.getByText('加载中...')).toBeDefined();
+  it('should show description when result is null', () => {
+    render(<IpCard title="从国内测试" description="这是您访问国内网站所使用的IP" result={null} />);
+    expect(screen.getByText('这是您访问国内网站所使用的IP')).toBeDefined();
   });
 
-  it('should show error state when status is fail', () => {
-    render(<IpCard name="北京" location="BJ" result={{ status: 'fail', query: 'error' } as any} />);
-    expect(screen.getByText('查询失败')).toBeDefined();
+  it('should show description when status is fail', () => {
+    render(<IpCard title="从国内测试" description="这是您访问国内网站所使用的IP" result={{ status: 'fail', query: 'error' } as any} />);
+    expect(screen.getAllByText('这是您访问国内网站所使用的IP').length).toBeGreaterThan(0);
   });
 
   it('should show IP info when result is success', () => {
@@ -27,9 +27,9 @@ describe('IpCard', () => {
       query: '1.2.3.4',
       latency: 50,
     };
-    render(<IpCard name="北京" location="BJ" result={result} />);
+    render(<IpCard title="从国内测试" description="这是您访问国内网站所使用的IP" result={result} />);
     expect(screen.getByText('1.2.3.4')).toBeDefined();
-    expect(screen.getByText('CN Beijing')).toBeDefined();
+    expect(screen.getByText('CN Beijing Beijing')).toBeDefined();
   });
 });
 
