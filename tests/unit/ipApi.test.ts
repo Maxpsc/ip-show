@@ -18,6 +18,7 @@ describe('fetchIpInfo', () => {
     };
 
     vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
       json: () => Promise.resolve(mockData),
     } as Response);
 
@@ -31,6 +32,7 @@ describe('fetchIpInfo', () => {
 
   it('should handle error response', async () => {
     vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
       json: () => Promise.resolve({ status: 'fail', query: '192.168.1.1' }),
     } as Response);
 

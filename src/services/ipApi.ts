@@ -1,6 +1,6 @@
 import { IpResult } from '../types';
 
-const API_BASE = 'http://ip-api.com/json';
+const API_BASE = 'https://ip-api.com/json';
 const FIELDS = 'status,country,countryCode,region,regionName,city,isp,org,as,query';
 
 export async function fetchIpInfo(ip?: string): Promise<IpResult> {
@@ -10,6 +10,11 @@ export async function fetchIpInfo(ip?: string): Promise<IpResult> {
 
   const start = performance.now();
   const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`HTTP error: ${response.status}`);
+  }
+
   const data = await response.json();
   const latency = Math.round(performance.now() - start);
 
