@@ -1,4 +1,3 @@
-import React from 'react';
 import { IpResult } from '../types';
 
 interface Props {
@@ -8,7 +7,7 @@ interface Props {
   expanded?: boolean;
 }
 
-export function IpCard({ name, location, result, expanded }: Props) {
+export function IpCard({ name, location: _location, result, expanded }: Props) {
   if (!result) {
     return (
       <div className="bg-gray-100 rounded p-3 min-w-[80px]">

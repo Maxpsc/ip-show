@@ -1,4 +1,3 @@
-import React from 'react';
 import { NodeResult } from '../types';
 import { IpCard } from './IpCard';
 
