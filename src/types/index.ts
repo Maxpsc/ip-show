@@ -22,6 +22,7 @@ export interface NodeResult {
   location: string;
   result: IpResult | null;
   error?: string;
+  isLoading?: boolean;
 }
 
 export const DOMESTIC_NODES: NodeConfig[] = [
