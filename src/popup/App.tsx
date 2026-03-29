@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useIpCheck } from '../hooks/useIpCheck';
 import { NodeGrid } from '../components/NodeGrid';
 import { ExpandButton } from '../components/ExpandButton';
@@ -7,10 +7,6 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 export default function App() {
   const { domesticResults, overseasResults, isLoading, check } = useIpCheck();
   const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    check();
-  }, [check]);
 
   return (
     <div className="w-[420px] p-4 bg-white">

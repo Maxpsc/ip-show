@@ -13,7 +13,7 @@ export function NodeGrid({ title, results, expanded }: Props) {
       <h3 className="text-sm font-medium text-gray-700 mb-2">{title}</h3>
       <div className="grid grid-cols-4 gap-2">
         {results.map((r) => (
-          <IpCard key={r.location} name={r.node} location={r.location} result={r.result} expanded={expanded} />
+          <IpCard key={r.location} name={r.node} result={r.result} expanded={expanded} />
         ))}
       </div>
     </div>
