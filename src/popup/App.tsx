@@ -1,31 +1,57 @@
 import { useCallback } from 'react';
 import { useIpQuery } from '../hooks/useIpQuery';
 import { IpCard } from '../components/IpCard';
-import { fetchMyIpInfo } from '../services/ipApi';
+import { getPublicIP } from '../services/webrtcIp';
+import { fetchIpInfo, fetchMyIpInfo } from '../services/ipApi';
 import { IpResult } from '../types';
 
 /**
- * 获取本机IP的查询函数（用于国内测试）
+ * 国内测试：获取直连出口 IP（通过 WebRTC 获取真实出口，API 获取详情）
  */
 async function queryDomestic(): Promise<{ data: IpResult; apiName: string }> {
-  const data = await fetchMyIpInfo();
-  return { data, apiName: 'ip-api.com' };
+  // Step 1: WebRTC 获取真实出口 IP
+  const webrtcResult = await getPublicIP();
+  const egressIp = webrtcResult?.ip;
+
+  // Step 2: 用 API 查询详细信息
+  // 优先用 WebRTC 获取的 IP 查询，如果失败再用本机 IP
+  let data: IpResult;
+  let apiName = 'WebRTC';
+
+  if (egressIp) {
+    try {
+      data = await fetchIpInfo(egressIp);
+      apiName = 'WebRTC + ' + (data.latency ? 'ip-api' : 'fallback');
+    } catch {
+      try {
+        data = await fetchMyIpInfo();
+        apiName = 'WebRTC + fallback';
+      } catch {
+        throw new Error('获取IP信息失败');
+      }
+    }
+  } else {
+    data = await fetchMyIpInfo();
+    apiName = 'fallback';
+  }
+
+  return { data, apiName };
 }
 
 /**
- * 获取国外测试IP（这里暂时用相同逻辑，后续可扩展）
+ * 国外测试：访问国外未被墙网站使用的 IP（与国内测试相同逻辑）
+ * 实际上在系统代理/VPN 下，出口 IP 是相同的
  */
 async function queryOverseas(): Promise<{ data: IpResult; apiName: string }> {
-  const data = await fetchMyIpInfo();
-  return { data, apiName: 'ip-api.com' };
+  return queryDomestic(); // 重用相同逻辑
 }
 
 /**
- * 获取谷歌测试IP（暂时用相同逻辑）
+ * 谷歌测试：访问被墙网站使用的 IP
+ * 在全局代理下，应该显示代理出口 IP
  */
 async function queryGoogle(): Promise<{ data: IpResult; apiName: string }> {
-  const data = await fetchMyIpInfo();
-  return { data, apiName: 'ip-api.com' };
+  return queryDomestic(); // 重用相同逻辑
 }
 
 export default function App() {
