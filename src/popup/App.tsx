@@ -119,7 +119,18 @@ export default function App() {
         </button>
       </div>
 
-      <div className="mt-3 text-xs text-gray-400 text-center">
+      <div className="mt-3 flex justify-center">
+        <a
+          href={chrome.runtime.getURL('index.html')}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-blue-500 hover:text-blue-700"
+        >
+          在新标签页打开（方便调试）→
+        </a>
+      </div>
+
+      <div className="mt-1 text-xs text-gray-400 text-center">
         仅提供IP地址查询功能
       </div>
     </div>
