@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "IP Show",
+  "version": "1.0.0",
+  "description": "查看境内外 IP 归属地",
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "permissions": ["activeTab"]
+}
