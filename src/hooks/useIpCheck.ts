@@ -5,7 +5,7 @@ import { DOMESTIC_NODES, OVERSEAS_NODES, NodeResult } from '../types';
 export function useIpCheck() {
   const [domesticResults, setDomesticResults] = useState<NodeResult[]>([]);
   const [overseasResults, setOverseasResults] = useState<NodeResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const check = useCallback(async () => {
     setIsLoading(true);
