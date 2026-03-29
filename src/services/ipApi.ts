@@ -14,6 +14,7 @@ export async function fetchMyIpInfo(): Promise<IpResult> {
   for (const api of IP_APIS) {
     try {
       const start = performance.now();
+      console.log(`[API] Trying ${api.name} for my IP...`);
       const response = await fetch(api.getMyIpUrl);
 
       if (!response.ok) {
@@ -25,13 +26,18 @@ export async function fetchMyIpInfo(): Promise<IpResult> {
       const result = api.adapter(data);
 
       if (result) {
+        console.log(`[API] ${api.name} returned:`, result);
         return { ...result, latency };
+      } else {
+        console.log(`[API] ${api.name} adapter returned null`);
       }
     } catch (err) {
+      console.warn(`[API] ${api.name} failed:`, err);
       errors.push(`${api.name}: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   }
 
+  console.error('[API] All APIs failed:', errors);
   throw new Error(`All APIs failed: ${errors.join('; ')}`);
 }
 
@@ -41,11 +47,14 @@ export async function fetchMyIpInfo(): Promise<IpResult> {
 export async function fetchIpInfo(ip: string): Promise<IpResult> {
   const errors: string[] = [];
 
+  console.log(`[API] Fetching info for IP: ${ip}`);
+
   for (const api of IP_APIS) {
     if (!api.supportsQueryIp) continue;
 
     try {
       const start = performance.now();
+      console.log(`[API] Trying ${api.name} for ${ip}...`);
       const response = await fetch(api.getIpUrl(ip));
 
       if (!response.ok) {
@@ -57,12 +66,17 @@ export async function fetchIpInfo(ip: string): Promise<IpResult> {
       const result = api.adapter(data, ip);
 
       if (result) {
+        console.log(`[API] ${api.name} returned:`, result);
         return { ...result, latency };
+      } else {
+        console.log(`[API] ${api.name} adapter returned null`);
       }
     } catch (err) {
+      console.warn(`[API] ${api.name} failed:`, err);
       errors.push(`${api.name}: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   }
 
+  console.error('[API] All APIs failed for', ip, errors);
   throw new Error(`All APIs failed: ${errors.join('; ')}`);
 }
