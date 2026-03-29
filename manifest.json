@@ -12,5 +12,5 @@
     }
   },
   "permissions": ["activeTab"],
-  "host_permissions": ["https://ip-api.com/*"]
+  "host_permissions": ["https://ip-api.com/*", "https://www.ip111.cn/*", "https://ip111.cn/*"]
 }

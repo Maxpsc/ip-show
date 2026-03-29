@@ -14,21 +14,21 @@ export interface IpApiConfig {
  */
 
 // ip-api.com 适配器
-const ipApiComAdapter: IpApiConfig['adapter'] = (data, requestIp) => {
-  const d = data as Record<string, unknown>;
-  if (!d || d.status !== 'success') return null;
-  return {
-    status: 'success',
-    country: (d.country as string) || '',
-    countryCode: (d.countryCode as string) || '',
-    regionName: (d.regionName as string) || '',
-    city: (d.city as string) || '',
-    isp: (d.isp as string) || '',
-    org: (d.org as string) || '',
-    as: (d.as as string) || '',
-    query: (d.query as string) || requestIp || '',
-  };
-};
+// const ipApiComAdapter: IpApiConfig['adapter'] = (data, requestIp) => {
+//   const d = data as Record<string, unknown>;
+//   if (!d || d.status !== 'success') return null;
+//   return {
+//     status: 'success',
+//     country: (d.country as string) || '',
+//     countryCode: (d.countryCode as string) || '',
+//     regionName: (d.regionName as string) || '',
+//     city: (d.city as string) || '',
+//     isp: (d.isp as string) || '',
+//     org: (d.org as string) || '',
+//     as: (d.as as string) || '',
+//     query: (d.query as string) || requestIp || '',
+//   };
+// };
 
 // api.ip.sb 适配器
 const ipSbAdapter: IpApiConfig['adapter'] = (data, requestIp) => {
@@ -190,13 +190,13 @@ const ipNcgAdapter: IpApiConfig['adapter'] = (data, requestIp) => {
  * 前面的 API 失败后会按顺序尝试后面的
  */
 export const IP_APIS: IpApiConfig[] = [
-  {
-    name: 'ip-api.com',
-    getMyIpUrl: 'https://ip-api.com/json/?fields=status,country,countryCode,region,regionName,city,isp,org,as,query',
-    getIpUrl: (ip) => `https://ip-api.com/json/${ip}?fields=status,country,countryCode,region,regionName,city,isp,org,as,query`,
-    adapter: ipApiComAdapter,
-    supportsQueryIp: true,
-  },
+  // {
+  //   name: 'ip-api.com',
+  //   getMyIpUrl: 'https://ip-api.com/json/?fields=status,country,countryCode,region,regionName,city,isp,org,as,query',
+  //   getIpUrl: (ip) => `https://ip-api.com/json/${ip}?fields=status,country,countryCode,region,regionName,city,isp,org,as,query`,
+  //   adapter: ipApiComAdapter,
+  //   supportsQueryIp: true,
+  // },
   {
     name: 'api.ip.sb',
     getMyIpUrl: 'https://api.ip.sb/geoip/',

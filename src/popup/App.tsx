@@ -130,6 +130,16 @@ export default function App() {
         </a>
       </div>
 
+      <div className="mt-3 border-t border-gray-200 pt-3">
+        <div className="text-xs text-gray-500 mb-2">参考：ip111.cn</div>
+        <iframe
+          src="https://www.ip111.cn/"
+          className="w-full h-48 border border-gray-200 rounded"
+          title="ip111.cn Reference"
+          sandbox="allow-scripts allow-same-origin"
+        />
+      </div>
+
       <div className="mt-1 text-xs text-gray-400 text-center">
         仅提供IP地址查询功能
       </div>
