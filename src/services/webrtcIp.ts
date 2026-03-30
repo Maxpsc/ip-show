@@ -1,3 +1,9 @@
+const DEBUG = false;
+
+function debug(...args: unknown[]) {
+  if (DEBUG) console.log('[WebRTC]', ...args);
+}
+
 // Public STUN servers
 const STUN_SERVERS = [
   'stun:stun.l.google.com:19302',
@@ -61,21 +67,21 @@ function extractIPFromCandidate(candidateString: string): { ip: string; type: st
  * which may differ from the direct IP if using a VPN/proxy
  */
 export async function getPublicIP(): Promise<CandidateInfo | null> {
-  console.log('[WebRTC] Starting STUN request...');
+  debug('Starting STUN request...');
   return new Promise((resolve) => {
     const pc = new RTCPeerConnection({
       iceServers: STUN_SERVERS.map((url) => ({ urls: url })),
     });
 
     const timeout = setTimeout(() => {
-      console.log('[WebRTC] Timeout, no public IP found');
+      debug('Timeout, no public IP found');
       pc.close();
       resolve(null);
     }, 5000);
 
     pc.onicecandidate = (event) => {
       if (!event.candidate) {
-        console.log('[WebRTC] ICE gathering complete, no more candidates');
+        debug('ICE gathering complete, no more candidates');
         clearTimeout(timeout);
         pc.close();
         resolve(null);
@@ -83,11 +89,11 @@ export async function getPublicIP(): Promise<CandidateInfo | null> {
       }
 
       const candidateStr = event.candidate.candidate;
-      console.log('[WebRTC] Got candidate:', candidateStr.substring(0, 100));
+      debug('Got candidate:', candidateStr.substring(0, 100));
 
       const result = extractIPFromCandidate(candidateStr);
       if (result && isPublicIP(result.ip)) {
-        console.log('[WebRTC] Found public IP:', result.ip, 'type:', result.type);
+        debug('Found public IP:', result.ip, 'type:', result.type);
         clearTimeout(timeout);
         pc.close();
         resolve({ ip: result.ip, type: result.type as CandidateInfo['type'] });
@@ -97,10 +103,10 @@ export async function getPublicIP(): Promise<CandidateInfo | null> {
     // Create a data channel to force ICE candidate gathering
     pc.createDataChannel('test');
     pc.createOffer().then((offer) => {
-      console.log('[WebRTC] Set local offer');
+      debug('Set local offer');
       pc.setLocalDescription(offer);
     }).catch((err) => {
-      console.error('[WebRTC] Error creating offer:', err);
+      debug('Error creating offer:', err);
       clearTimeout(timeout);
       pc.close();
       resolve(null);

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "IP Show",
   "version": "1.0.0",
-  "description": "查看境内外 IP 归属地",
+  "description": "全方位检测您的IP地址 - 查看国内、国外及谷歌访问IP",
   "action": {
     "default_popup": "index.html",
     "default_icon": {
@@ -12,6 +12,11 @@
     }
   },
   "permissions": ["activeTab"],
-  "host_permissions": ["https://ip-api.com/*", "https://www.ip111.cn/*"],
-  "devtools_page": "src/devtools.html"
+  "host_permissions": [
+    "https://ip-api.com/*",
+    "https://api.ip.sb/*",
+    "https://whois.pconline.com.cn/*",
+    "https://www.ip111.cn/*",
+    "https://ip111.cn/*"
+  ]
 }
