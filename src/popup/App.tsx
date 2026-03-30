@@ -53,14 +53,14 @@ export default function App() {
   }, [domestic]);
 
   return (
-    <div className="w-[820px] h-[400px] p-2 bg-background overflow-hidden">
+    <div className="w-[768px] h-[400px] bg-background overflow-hidden">
 
-      <div className="relative">
-        <div className="absolute top-0 left-0 right-0" style={{ zIndex: 1 }}>
+      <div className="relative w-full h-full">
+        <div className="absolute top-0 left-0 right-0 p-2" style={{ zIndex: 1 }}>
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-bold text-foreground">
               🌐 IP Show
-              <span className="text-xs text-muted-foreground ml-4">全方位查询您的IP地址</span>
+              <span className="text-xs text-muted-foreground ml-4">全方位检测您的IP地址</span>
             </h1>
             <button
               onClick={handleRefreshAll}
@@ -83,12 +83,11 @@ export default function App() {
         <iframe
           ref={iframeRef}
           src="https://www.ip111.cn/"
-          className="w-full h-[440px] border-none"
+          className="absolute w-full h-[500px] border-none"
           title="ip111.cn Reference"
           sandbox="allow-scripts allow-same-origin"
         />
-        <div className="absolute top-0 left-0 right-0 h-[120px] bg-background pointer-events-none" />
-        <div className="absolute bottom-0 left-0 right-0 h-[40px] bg-background pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-[120px] bg-background pointer-events-none"></div>
       </div>
 
       {/* <div className="mt-4 flex justify-center">
