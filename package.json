@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "pub": "pnpm build && node scripts/package.mjs"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
