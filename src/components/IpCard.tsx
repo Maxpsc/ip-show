@@ -2,7 +2,7 @@ import { IpResult } from '@/types';
 import { QueryStatus } from '@/hooks/useIpQuery';
 
 interface Props {
-  title: string;
+  className?: string;
   description: string;
   status: QueryStatus;
   result: IpResult | null;
@@ -12,62 +12,47 @@ interface Props {
   onRetry: () => void;
 }
 
-export function IpCard({ title, description, status, result, error, apiName, latency, onRetry }: Props) {
-  if (status === 'loading') {
-    return (
-      <div className="border-b border-border py-3">
-        <div className="text-sm text-muted-foreground mb-1">{title}</div>
-        <div className="flex items-center gap-2">
-          <div className="animate-pulse">
-            <div className="h-5 w-32 bg-muted rounded"></div>
-          </div>
-          <span className="text-xs text-muted-foreground">查询中...</span>
-        </div>
-        <div className="text-xs text-muted-foreground mt-1">{description}</div>
-      </div>
-    );
-  }
-
-  if (status === 'error' || !result || result.status === 'fail') {
-    return (
-      <div className="border-b border-border py-3">
-        <div className="text-sm text-muted-foreground mb-1">{title}</div>
-        <div className="text-sm text-destructive">{error || '查询失败'}</div>
-        <div className="flex items-center justify-between mt-1">
-          <button onClick={onRetry} className="text-xs text-blue-500 hover:text-blue-700">
-            重试
-          </button>
-        </div>
-        <div className="text-xs text-muted-foreground">{description}</div>
-      </div>
-    );
-  }
+export function IpCard({ className, description, status, result, error, apiName, latency, onRetry }: Props) {
+  const isLoading = status === 'loading';
+  const isError = status === 'error' || !result || result.status === 'fail';
+  const isSuccess = status === 'success' && result && result.status !== 'fail';
 
   return (
-    <div className="border-b border-border py-3">
-      <div className="text-sm text-muted-foreground mb-1">{title}</div>
-      <div className="flex items-center gap-2">
-        <span className="text-lg font-mono text-foreground">{result.query}</span>
-        <span className="text-sm text-muted-foreground">
-          {result.countryCode} {result.regionName} {result.city}
-        </span>
-      </div>
-      <div className="text-xs text-muted-foreground mt-1">{result.isp}</div>
-      <div className="text-xs text-muted-foreground">{description}</div>
-      <div className="flex items-center justify-between mt-2">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          {apiName && <span>via {apiName}</span>}
-          {latency !== null && <span>{latency}ms</span>}
-          <span className="text-green-500">✓</span>
+    <div className={className || "border-b border-border py-3"}>
+      <div className="flex flex-col items-center justify-center text-center gap-1">
+        {/* IP and location row */}
+        <div className="flex items-center gap-2">
+          {isLoading ? (
+            <div className="h-5 w-32 bg-muted rounded animate-pulse" />
+          ) : isError ? (
+            <span className="text-sm text-destructive">{error || '查询失败'}</span>
+          ) : (
+            <>
+              <span className="text-lg font-mono text-foreground">{result.query}</span>
+              <span className="text-sm text-muted-foreground">
+                {result.countryCode} {result.regionName} {result.city}
+              </span>
+            </>
+          )}
         </div>
-        <a
-          href={`https://who.is/whois-ip/ip-address/${result.query}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-blue-500 hover:text-blue-700"
-        >
-          more →
-        </a>
+
+        {/* Status row */}
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          {isLoading && <span>查询中...</span>}
+          {isError && (
+            <button onClick={onRetry} className="text-blue-500 hover:text-blue-700">
+              重试
+            </button>
+          )}
+          {isSuccess && (
+            <>
+              {apiName && <span>via {apiName}</span>}
+              {latency !== null && <span>{latency}ms</span>}
+              <span className="text-green-500">✓</span>
+            </>
+          )}
+          <span>{description}</span>
+        </div>
       </div>
     </div>
   );
