@@ -7,6 +7,7 @@ export interface IpApiConfig {
   getIpUrl: (ip: string) => string;
   adapter: (data: unknown, requestIp?: string) => IpResult | null;
   supportsQueryIp?: boolean;
+  encoding?: string; // 指定响应编码，默认 utf-8（如 gbk）
 }
 
 /**
@@ -210,6 +211,7 @@ export const IP_APIS: IpApiConfig[] = [
     getIpUrl: (ip) => `https://whois.pconline.com.cn/ipJson.jsp?ip=${ip}&json=true`,
     adapter: pconlineAdapter,
     supportsQueryIp: true,
+    encoding: 'gbk',
   },
   {
     name: 'api.ip2location.io',

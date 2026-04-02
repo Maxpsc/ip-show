@@ -27,7 +27,9 @@ export async function fetchMyIpInfo(): Promise<IpResult> {
         throw new Error(`HTTP ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = api.encoding
+        ? JSON.parse(new TextDecoder(api.encoding).decode(await response.arrayBuffer()))
+        : await response.json();
       const latency = Math.round(performance.now() - start);
       const result = api.adapter(data);
 
@@ -45,6 +47,24 @@ export async function fetchMyIpInfo(): Promise<IpResult> {
 
   debug('All APIs failed:', errors);
   throw new Error(`All APIs failed: ${errors.join('; ')}`);
+}
+
+/**
+ * 通过 pconline 获取大陆 IP 信息（GBK 编码）
+ */
+export async function fetchPconlineIpInfo(): Promise<IpResult> {
+  const api = IP_APIS.find((a) => a.name === 'whois.pconline.com.cn');
+  if (!api) throw new Error('pconline API not configured');
+
+  const start = performance.now();
+  const response = await fetch(api.getMyIpUrl);
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+  const data = JSON.parse(new TextDecoder('gbk').decode(await response.arrayBuffer()));
+  const latency = Math.round(performance.now() - start);
+  const result = api.adapter(data);
+  if (!result) throw new Error('pconline adapter returned null');
+  return { ...result, latency };
 }
 
 /**
@@ -67,7 +87,9 @@ export async function fetchIpInfo(ip: string): Promise<IpResult> {
         throw new Error(`HTTP ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = api.encoding
+        ? JSON.parse(new TextDecoder(api.encoding).decode(await response.arrayBuffer()))
+        : await response.json();
       const latency = Math.round(performance.now() - start);
       const result = api.adapter(data, ip);
 

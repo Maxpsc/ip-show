@@ -1,60 +1,48 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import { useIpQuery } from '@/hooks/useIpQuery';
 import { IpCard } from '@/components/IpCard';
-import { getPublicIP } from '@/services/webrtcIp';
-import { fetchIpInfo, fetchMyIpInfo } from '@/services/ipApi';
+import { fetchMyIpInfo, fetchPconlineIpInfo } from '@/services/ipApi';
 import { IpResult } from '@/types';
 
-async function queryDomestic(): Promise<{ data: IpResult; apiName: string }> {
-  const webrtcResult = await getPublicIP();
-  const egressIp = webrtcResult?.ip;
-
-  let data: IpResult;
-  let apiName = 'WebRTC';
-
-  if (egressIp) {
-    try {
-      data = await fetchIpInfo(egressIp);
-      apiName = 'WebRTC + ' + (data.latency ? 'ip-api' : 'api');
-    } catch {
-      try {
-        data = await fetchMyIpInfo();
-        apiName = 'WebRTC + fallback';
-      } catch {
-        throw new Error('获取IP信息失败');
-      }
-    }
-  } else {
-    data = await fetchMyIpInfo();
-    apiName = 'api';
-  }
-
-  return { data, apiName };
+async function queryOverseas(): Promise<{ data: IpResult; apiName: string }> {
+  const data = await fetchMyIpInfo();
+  return { data, apiName: 'api' };
 }
 
-// async function queryOverseas(): Promise<{ data: IpResult; apiName: string }> {
-//   return queryDomestic();
-// }
+async function queryCN(): Promise<{ data: IpResult; apiName: string }> {
+  const data = await fetchPconlineIpInfo();
+  return { data, apiName: 'pconline' };
+}
 
-// async function queryGoogle(): Promise<{ data: IpResult; apiName: string }> {
-//   return queryDomestic();
-// }
+function setBadge(countryCode: string) {
+  const text = countryCode.slice(0, 4).toUpperCase();
+  chrome.action.setBadgeText({ text });
+  chrome.action.setBadgeBackgroundColor({ color: '#1a1a2e' });
+  chrome.storage.local.set({ badgeText: text, badgeColor: '#1a1a2e' });
+}
 
 export default function App() {
-  const domestic = useIpQuery({ type: 'domestic', queryFn: queryDomestic });
+  const overseas = useIpQuery({ type: 'overseas', queryFn: queryOverseas });
+  const cn = useIpQuery({ type: 'cn', queryFn: queryCN });
+
+  useEffect(() => {
+    if (overseas.status === 'success' && overseas.data?.countryCode) {
+      setBadge(overseas.data.countryCode);
+    }
+  }, [overseas.status, overseas.data?.countryCode]);
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const handleRefreshAll = useCallback(() => {
-    domestic.refetch(true);
+    overseas.refetch(true);
+    cn.refetch(true);
     if (iframeRef.current) {
       iframeRef.current.src = iframeRef.current.src;
     }
-  }, [domestic]);
+  }, [overseas, cn]);
 
   return (
     <div className="w-[768px] h-[400px] bg-background overflow-hidden">
-
       <div className="relative w-full h-full">
         <div className="absolute top-0 left-0 right-0 p-2" style={{ zIndex: 1 }}>
           <div className="flex items-center justify-between">
@@ -70,14 +58,28 @@ export default function App() {
             </button>
           </div>
 
-          <IpCard
-            status={domestic.status}
-            result={domestic.data}
-            error={domestic.error}
-            apiName={domestic.apiName}
-            latency={domestic.latency}
-            onRetry={() => domestic.refetch(true)}
-          />
+          <div className="flex gap-2">
+            <IpCard
+              className="flex-1 border-b border-border py-3"
+              description="境外访问"
+              status={overseas.status}
+              result={overseas.data}
+              error={overseas.error}
+              apiName={overseas.apiName}
+              latency={overseas.latency}
+              onRetry={() => overseas.refetch(true)}
+            />
+            <IpCard
+              className="flex-1 border-b border-border py-3"
+              description="大陆访问"
+              status={cn.status}
+              result={cn.data}
+              error={cn.error}
+              apiName={cn.apiName}
+              latency={cn.latency}
+              onRetry={() => cn.refetch(true)}
+            />
+          </div>
         </div>
 
         <iframe
@@ -87,23 +89,8 @@ export default function App() {
           title="ip111.cn Reference"
           sandbox="allow-scripts allow-same-origin"
         />
-        <div className="absolute top-0 left-0 right-0 h-[120px] bg-background pointer-events-none"></div>
+        <div className="absolute top-0 left-0 right-0 h-[150px] bg-background pointer-events-none"></div>
       </div>
-
-      {/* <div className="mt-4 flex justify-center">
-        <a
-          href={chrome.runtime.getURL('index.html')}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-blue-500 hover:text-blue-700"
-        >
-          在新标签页打开（方便调试）→
-        </a>
-      </div> */}
-
-      {/* <div className="mt-2 text-xs text-muted-foreground text-center">
-        仅提供IP地址查询功能
-      </div> */}
     </div>
   );
 }
